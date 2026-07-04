@@ -12,6 +12,7 @@
 |---------|---------|
 | `npm install` | Install dependencies |
 | `npm run dev` | Start Vite dev server |
+| `npm run dev:mobile` | Start dev server with HTTPS tunnel for phone testing |
 | `npm test` | Run unit tests once |
 | `npm run test:watch` | Run tests in watch mode |
 | `npm run build` | Typecheck and produce static `dist/` |
@@ -41,6 +42,51 @@ Pure logic (config validation) lives in testable modules. Browser APIs are mocke
 5. Run `npm test` and confirm it passes (green)
 6. Refactor if needed; keep tests green
 7. Open a PR with the template checklist
+
+## Testing on mobile
+
+Phones require **HTTPS** for microphone access. A plain `http://192.168.x.x` URL on your LAN will load the page but block the mic.
+
+### One-time setup
+
+Install [cloudflared](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/) (the tunnel used by `dev:mobile`):
+
+```bash
+brew install cloudflared
+```
+
+### Run
+
+```bash
+npm run dev:mobile
+```
+
+This script:
+
+1. Starts the Vite dev server on all interfaces (`--host`)
+2. Opens a temporary HTTPS tunnel via cloudflared
+3. Prints a **Ready!** URL like `https://something.trycloudflare.com`
+
+Open that URL on your phone (same Wi‑Fi is fine; traffic goes through the tunnel). Keep your Mac awake and the terminal running while you test.
+
+### On your phone
+
+1. Open the printed `https://…trycloudflare.com` URL in Safari (iOS) or Chrome (Android)
+2. Tap **Start** — microphone permission must come from a direct tap (especially on iOS)
+3. Allow microphone access when prompted
+4. Confirm echo is audible at the configured delay
+5. Tap **Stop** and confirm the mic is released
+
+The tunnel URL changes each time you restart `dev:mobile`. For longer-lived testing, deploy a production build to any static host with HTTPS (see [README](../README.md#deployment)).
+
+### Troubleshooting
+
+| Issue | Fix |
+|-------|-----|
+| `cloudflared not found` | Run `brew install cloudflared` |
+| `Blocked request. This host … is not allowed` | Use `npm run dev:mobile` (not `npm run dev`); it sets `MOBILE_DEV=1` so Vite allows tunnel hostnames |
+| No mic prompt | URL must be `https://`, not `http://192.168…` |
+| iOS: no audio after Start | Tap Start directly; iOS blocks autoplay without a user gesture |
 
 ## Manual microphone checklist
 
