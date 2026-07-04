@@ -59,9 +59,9 @@ export class App {
   private render(): void {
     this.root.innerHTML = `
       <main class="shell">
-        <h1>Echo Chamber</h1>
-        <p class="tagline">Speak, clap, or make a sound — hear it echoed back.</p>
-        <p class="status" role="status">Tap Start and allow microphone access.</p>
+        <h1>Honk Chamber</h1>
+        <p class="tagline">Honk, clap, or cause a ruckus — hear it echoed back.</p>
+        <p class="status" role="status">Ready to make trouble? Tap Honk! and allow microphone access.</p>
         <div class="spectrogram-panel"></div>
         <div class="controls">
           <label class="delay-control" for="delay">
@@ -78,7 +78,7 @@ export class App {
             step="50"
             value="${DEFAULT_DELAY_MS}"
           />
-          <button id="toggle" type="button" class="primary-button">Start</button>
+          <button id="toggle" type="button" class="primary-button">Honk!</button>
         </div>
       </main>
     `
@@ -115,7 +115,7 @@ export class App {
     if (engine.isRunning) {
       engine.stop()
       this.spectrogram.detach()
-      this.setStatus('Stopped.')
+      this.setStatus('The goose is resting.')
       this.updateToggleButton(false)
       return
     }
@@ -126,7 +126,7 @@ export class App {
       if (analysers) {
         this.spectrogram.attach(analysers.input, analysers.output)
       }
-      this.setStatus('Listening — speak and hear your echo.')
+      this.setStatus('The goose is listening — make a sound and hear your echo.')
       this.updateToggleButton(true)
     } catch (error) {
       this.spectrogram.detach()
@@ -156,7 +156,7 @@ export class App {
   }
 
   private updateToggleButton(isRunning: boolean): void {
-    this.toggleButtonEl.textContent = isRunning ? 'Stop' : 'Start'
+    this.toggleButtonEl.textContent = isRunning ? 'Shh...' : 'Honk!'
     this.toggleButtonEl.setAttribute('aria-pressed', String(isRunning))
   }
 }
