@@ -120,7 +120,7 @@ describe('EchoEngine', () => {
       createTestDeps()
     const engine = new EchoEngine(
       { getUserMedia, createAudioContext, scheduler },
-      { delayMs: 500, threshold: 0.5 },
+      { delayMs: 500, threshold: 0.008 },
     )
 
     await engine.start()
@@ -135,7 +135,7 @@ describe('EchoEngine', () => {
       createTestDeps()
     const engine = new EchoEngine(
       { getUserMedia, createAudioContext, scheduler },
-      { delayMs: 500, threshold: 0.5 },
+      { delayMs: 500, threshold: 0.005 },
     )
 
     await engine.start()
@@ -150,12 +150,12 @@ describe('EchoEngine', () => {
       createTestDeps()
     const engine = new EchoEngine(
       { getUserMedia, createAudioContext, scheduler },
-      { delayMs: 500, threshold: 0.9 },
+      { delayMs: 500, threshold: 0.008 },
     )
 
     await engine.start()
-    context.analyserNodes[0].fillValue = 0.5
-    engine.setThreshold(0.4)
+    context.analyserNodes[0].fillValue = 0.005
+    engine.setThreshold(0.004)
     runFrame()
 
     expect(context.gainNodes[0].gain.value).toBe(1)

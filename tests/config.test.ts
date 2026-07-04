@@ -4,9 +4,13 @@ import {
   DEFAULT_ECHO_CONFIG,
   DEFAULT_THRESHOLD,
   MAX_DELAY_MS,
+  MAX_THRESHOLD,
   MIN_DELAY_MS,
+  MIN_THRESHOLD,
   clampDelay,
   clampThreshold,
+  sensitivitySliderToThreshold,
+  thresholdToSensitivitySlider,
 } from '../src/types/config'
 
 describe('config defaults', () => {
@@ -14,9 +18,9 @@ describe('config defaults', () => {
     expect(DEFAULT_DELAY_MS).toBe(500)
   })
 
-  it('uses a threshold between 0 and 1', () => {
-    expect(DEFAULT_THRESHOLD).toBeGreaterThanOrEqual(0)
-    expect(DEFAULT_THRESHOLD).toBeLessThanOrEqual(1)
+  it('uses a threshold within the 0–1% useful range', () => {
+    expect(DEFAULT_THRESHOLD).toBeGreaterThanOrEqual(MIN_THRESHOLD)
+    expect(DEFAULT_THRESHOLD).toBeLessThanOrEqual(MAX_THRESHOLD)
   })
 
   it('provides a default echo config with clamped values', () => {
@@ -45,14 +49,27 @@ describe('clampDelay', () => {
 
 describe('clampThreshold', () => {
   it('returns values within bounds unchanged', () => {
-    expect(clampThreshold(0.5)).toBe(0.5)
+    expect(clampThreshold(0.005)).toBe(0.005)
   })
 
   it('clamps below zero to 0', () => {
-    expect(clampThreshold(-0.1)).toBe(0)
+    expect(clampThreshold(-0.1)).toBe(MIN_THRESHOLD)
   })
 
-  it('clamps above one to 1', () => {
-    expect(clampThreshold(1.5)).toBe(1)
+  it('clamps above maximum to 1%', () => {
+    expect(clampThreshold(0.5)).toBe(MAX_THRESHOLD)
+    expect(MAX_THRESHOLD).toBe(0.01)
+  })
+})
+
+describe('sensitivity slider mapping', () => {
+  it('maps slider endpoints to 0% and 1%', () => {
+    expect(sensitivitySliderToThreshold(0)).toBe(0)
+    expect(sensitivitySliderToThreshold(100)).toBe(0.01)
+  })
+
+  it('round-trips default threshold through the slider', () => {
+    expect(thresholdToSensitivitySlider(DEFAULT_THRESHOLD)).toBe(50)
+    expect(sensitivitySliderToThreshold(50)).toBe(DEFAULT_THRESHOLD)
   })
 })
