@@ -1,27 +1,24 @@
 const MAX_CANVAS_WIDTH = 900
+const CANVAS_BG = '#F5F0E6'
+const INK_RGBA = 'rgba(44, 44, 44, 0.45)'
+
+const CANVAS_FONT = "'Hepta Slab', Georgia, serif"
+const ECHO_R = 107
+const ECHO_G = 142
+const ECHO_B = 107
 
 type Rgba = [number, number, number, number]
 
-function buildLivePalette(dark: boolean): Rgba[] {
+function buildLivePalette(): Rgba[] {
   const palette: Rgba[] = []
   for (let i = 0; i < 256; i++) {
     const t = i / 255
-
-    if (dark) {
-      palette.push([
-        Math.round(160 + 95 * t),
-        Math.round(60 + 140 * t),
-        Math.round(10 + 20 * (1 - t)),
-        i === 0 ? 0 : Math.round(80 + 175 * t),
-      ])
-    } else {
-      palette.push([
-        Math.round(200 + 55 * t),
-        Math.round(70 + 120 * t),
-        Math.round(10 + 20 * (1 - t)),
-        i === 0 ? 0 : Math.round(100 + 155 * t),
-      ])
-    }
+    palette.push([
+      Math.round(210 + 35 * t),
+      Math.round(120 + 55 * t),
+      Math.round(80 + 20 * (1 - t)),
+      i === 0 ? 0 : Math.round(90 + 165 * t),
+    ])
   }
   return palette
 }
@@ -36,9 +33,8 @@ export class Spectrogram {
   private animationId: number | null = null
   private inputAnalyser: AnalyserNode | null = null
   private outputAnalyser: AnalyserNode | null = null
-  private isDark = window.matchMedia('(prefers-color-scheme: dark)').matches
   private prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  private livePalette = buildLivePalette(this.isDark)
+  private livePalette = buildLivePalette()
   private canvasWidth = 0
   private canvasHeight = 0
 
@@ -54,7 +50,7 @@ export class Spectrogram {
 
     this.legend = document.createElement('p')
     this.legend.className = 'spectrogram-legend'
-    this.legend.textContent = 'Live · Echo'
+    this.legend.textContent = 'Honk · Echo'
 
     this.container.appendChild(this.canvas)
     this.container.insertAdjacentElement('afterend', this.legend)
@@ -66,12 +62,6 @@ export class Spectrogram {
     this.ctx = context
     this.inputFrequencyData = new Uint8Array(0)
     this.outputFrequencyData = new Uint8Array(0)
-
-    const darkQuery = window.matchMedia('(prefers-color-scheme: dark)')
-    darkQuery.addEventListener('change', (event) => {
-      this.isDark = event.matches
-      this.livePalette = buildLivePalette(this.isDark)
-    })
 
     const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
     motionQuery.addEventListener('change', (event) => {
@@ -147,7 +137,7 @@ export class Spectrogram {
   }
 
   private clearCanvas(): void {
-    this.ctx.fillStyle = this.isDark ? '#121212' : '#f8f8f8'
+    this.ctx.fillStyle = CANVAS_BG
     this.ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight)
   }
 
@@ -155,18 +145,15 @@ export class Spectrogram {
     this.clearCanvas()
     this.drawGrid(0.08)
 
-    this.ctx.fillStyle = this.isDark ? 'rgba(240, 240, 240, 0.45)' : 'rgba(26, 26, 26, 0.45)'
-    this.ctx.font = `${Math.max(12, Math.floor(this.canvasHeight * 0.12))}px system-ui, sans-serif`
+    this.ctx.fillStyle = INK_RGBA
+    this.ctx.font = `${Math.max(12, Math.floor(this.canvasHeight * 0.12))}px ${CANVAS_FONT}`
     this.ctx.textAlign = 'center'
     this.ctx.textBaseline = 'middle'
-    this.ctx.fillText('Sound will appear here', this.canvasWidth / 2, this.canvasHeight / 2)
+    this.ctx.fillText('Honks will appear here', this.canvasWidth / 2, this.canvasHeight / 2)
   }
 
   private drawGrid(opacity: number): void {
-    const stroke = this.isDark
-      ? `rgba(240, 240, 240, ${opacity})`
-      : `rgba(26, 26, 26, ${opacity})`
-    this.ctx.strokeStyle = stroke
+    this.ctx.strokeStyle = `rgba(44, 44, 44, ${opacity})`
     this.ctx.lineWidth = 1
 
     const horizontalLines = 4
@@ -225,7 +212,7 @@ export class Spectrogram {
   private scrollCanvas(): void {
     const image = this.ctx.getImageData(1, 0, this.canvasWidth - 1, this.canvasHeight)
     this.ctx.putImageData(image, 0, 0)
-    this.ctx.fillStyle = this.isDark ? '#121212' : '#f8f8f8'
+    this.ctx.fillStyle = CANVAS_BG
     this.ctx.fillRect(this.canvasWidth - 1, 0, 1, this.canvasHeight)
   }
 
@@ -271,9 +258,9 @@ export class Spectrogram {
 
       const blend = (value / 255) * 0.45
       const pixelIndex = y * 4
-      pixels[pixelIndex] = Math.round(pixels[pixelIndex] * (1 - blend) + 59 * blend)
-      pixels[pixelIndex + 1] = Math.round(pixels[pixelIndex + 1] * (1 - blend) + 130 * blend)
-      pixels[pixelIndex + 2] = Math.round(pixels[pixelIndex + 2] * (1 - blend) + 246 * blend)
+      pixels[pixelIndex] = Math.round(pixels[pixelIndex] * (1 - blend) + ECHO_R * blend)
+      pixels[pixelIndex + 1] = Math.round(pixels[pixelIndex + 1] * (1 - blend) + ECHO_G * blend)
+      pixels[pixelIndex + 2] = Math.round(pixels[pixelIndex + 2] * (1 - blend) + ECHO_B * blend)
       pixels[pixelIndex + 3] = 255
     }
 
@@ -303,7 +290,7 @@ export class Spectrogram {
       const y = this.canvasHeight - barHeight
 
       if (isGhost) {
-        this.ctx.fillStyle = `rgba(59, 130, 246, ${(value / 255) * 0.45})`
+        this.ctx.fillStyle = `rgba(${ECHO_R}, ${ECHO_G}, ${ECHO_B}, ${(value / 255) * 0.45})`
       } else {
         const [r, g, b, a] = this.livePalette[value]
         this.ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${a / 255})`

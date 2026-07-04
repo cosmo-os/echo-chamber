@@ -25,7 +25,7 @@ describe('Spectrogram', () => {
 
     const legend = container.nextElementSibling
     expect(legend?.className).toBe('spectrogram-legend')
-    expect(legend?.textContent).toBe('Live · Echo')
+    expect(legend?.textContent).toBe('Honk · Echo')
   })
 
   it('attaches input and output analysers for synced echo overlay', () => {
