@@ -102,13 +102,24 @@ These cover the MVP without additional dependencies.
 - Target evergreen Chrome, Safari (iOS 14.5+), Firefox, and Edge
 - iOS Safari requires a user gesture to start the audio context — the UI should account for this
 
+## Development
+
+```bash
+npm install
+npm run dev      # local dev server
+npm test         # unit tests
+npm run build    # production build
+```
+
+See [docs/development.md](docs/development.md) for the TDD workflow, project layout, and manual microphone checklist. See [CONTRIBUTING.md](CONTRIBUTING.md) for branch naming and PR conventions.
+
 ## Project Status
 
-**Design phase** — this README defines the vision; implementation has not started.
+**Scaffolded — MVP in progress.** Vite + TypeScript tooling, Vitest, and CI are in place. Audio engine and UI controls are not yet implemented.
 
 ### Next steps
 
-1. Scaffold Vite + TypeScript
+1. ~~Scaffold Vite + TypeScript~~
 2. Implement microphone capture and fixed-delay echo MVP
 3. Add volume-threshold gating
 4. Iterate on the open design questions above
