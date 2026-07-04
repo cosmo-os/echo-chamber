@@ -1,0 +1,53 @@
+:root {
+  color-scheme: light dark;
+  font-family: system-ui, -apple-system, sans-serif;
+  line-height: 1.5;
+  color: #1a1a1a;
+  background: #f8f8f8;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color: #f0f0f0;
+    background: #121212;
+  }
+}
+
+body {
+  margin: 0;
+}
+
+.shell {
+  max-width: 28rem;
+  margin: 0 auto;
+  padding: 2rem 1.25rem;
+  text-align: center;
+}
+
+h1 {
+  margin: 0 0 0.5rem;
+  font-size: 1.75rem;
+  font-weight: 600;
+}
+
+.tagline {
+  margin: 0 0 1.5rem;
+  opacity: 0.75;
+}
+
+button {
+  font: inherit;
+  padding: 0.625rem 1.25rem;
+  border-radius: 0.5rem;
+  border: 1px solid transparent;
+  background: #3b82f6;
+  color: #fff;
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.hint {
+  margin: 1rem 0 0;
+  font-size: 0.875rem;
+  opacity: 0.6;
+}
