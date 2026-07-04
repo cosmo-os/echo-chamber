@@ -1,5 +1,6 @@
 import {
   DEFAULT_DELAY_MS,
+  DEFAULT_THRESHOLD,
   MAX_DELAY_MS,
   MIN_DELAY_MS,
 } from '../types/config.ts'
@@ -9,6 +10,7 @@ export type AppEngine = {
   start(): Promise<void>
   stop(): void
   setDelayMs(delayMs: number): void
+  setThreshold(threshold: number): void
 }
 
 export class App {
@@ -17,7 +19,10 @@ export class App {
   private statusEl!: HTMLParagraphElement
   private delaySliderEl!: HTMLInputElement
   private delayValueEl!: HTMLSpanElement
+  private sensitivitySliderEl!: HTMLInputElement
+  private sensitivityValueEl!: HTMLSpanElement
   private toggleButtonEl!: HTMLButtonElement
+  private threshold = DEFAULT_THRESHOLD
 
   private readonly root: HTMLElement
   private readonly getEngine: () => AppEngine
@@ -51,6 +56,15 @@ export class App {
     return Number(this.delaySliderEl.value)
   }
 
+  setSensitivitySlider(percent: number): void {
+    this.sensitivitySliderEl.value = String(percent)
+    this.sensitivitySliderEl.dispatchEvent(new Event('input'))
+  }
+
+  getSensitivityValue(): number {
+    return Number(this.sensitivitySliderEl.value)
+  }
+
   private pendingStart: Promise<void> = Promise.resolve()
 
   private render(): void {
@@ -74,6 +88,20 @@ export class App {
             step="50"
             value="${DEFAULT_DELAY_MS}"
           />
+          <label class="delay-control" for="sensitivity">
+            Sensitivity
+            <span class="sensitivity-value">${Math.round(DEFAULT_THRESHOLD * 100)}</span>
+            %
+          </label>
+          <input
+            id="sensitivity"
+            class="delay-slider"
+            type="range"
+            min="0"
+            max="100"
+            step="1"
+            value="${Math.round(DEFAULT_THRESHOLD * 100)}"
+          />
           <button id="toggle" type="button" class="primary-button">Start</button>
         </div>
       </main>
@@ -82,6 +110,8 @@ export class App {
     this.statusEl = this.root.querySelector('.status')!
     this.delaySliderEl = this.root.querySelector('#delay')!
     this.delayValueEl = this.root.querySelector('.delay-value')!
+    this.sensitivitySliderEl = this.root.querySelector('#sensitivity')!
+    this.sensitivityValueEl = this.root.querySelector('.sensitivity-value')!
     this.toggleButtonEl = this.root.querySelector('#toggle')!
   }
 
@@ -94,6 +124,13 @@ export class App {
       this.delayMs = Number(this.delaySliderEl.value)
       this.delayValueEl.textContent = String(this.delayMs)
       this.getEngineInstance().setDelayMs(this.delayMs)
+    })
+
+    this.sensitivitySliderEl.addEventListener('input', () => {
+      const percent = Number(this.sensitivitySliderEl.value)
+      this.threshold = percent / 100
+      this.sensitivityValueEl.textContent = String(percent)
+      this.getEngineInstance().setThreshold(this.threshold)
     })
   }
 

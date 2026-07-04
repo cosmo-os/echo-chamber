@@ -22,9 +22,9 @@
 ```
 src/
   main.ts          Entry point and bootstrap
-  audio/           Web Audio pipeline (upcoming)
-  types/           Config and shared types (upcoming)
-  ui/              DOM and controls (upcoming)
+  audio/           Web Audio pipeline (graph, engine, level detector)
+  types/           Config and shared types
+  ui/              DOM and controls
 tests/
   helpers/         Shared mocks (e.g. AudioContext)
   *.test.ts        Unit tests
@@ -49,6 +49,8 @@ Copy this into PR descriptions when audio behavior changes:
 - [ ] `npm run dev` loads without console errors
 - [ ] Clicking Start prompts for microphone permission
 - [ ] After granting permission, echo is audible at the configured delay
+- [ ] Louder sounds echo; quiet background noise does not (adjust Sensitivity slider)
+- [ ] Changing delay and sensitivity updates behavior while running
 - [ ] Stop ends playback and releases the microphone
 - [ ] Denied permission shows a clear error message
 - [ ] (Mobile Safari) Start works after a direct tap — no autoplay without gesture
