@@ -95,8 +95,10 @@ These cover the MVP without additional dependencies.
 
 ### Deployment
 
-- Output is static files only (Vite `dist/`) — GitHub Pages, Netlify, Cloudflare Pages, or any static host
-- **HTTPS is required** for microphone access on non-localhost origins
+Production is hosted on **GitHub Pages** at [https://cosmo-os.github.io/echo-chamber/](https://cosmo-os.github.io/echo-chamber/). Merges to `main` deploy automatically after CI passes.
+
+- Output is static files only (Vite `dist/`)
+- **HTTPS is required** for microphone access on non-localhost origins (provided automatically by Pages)
 
 ### Browser support
 
