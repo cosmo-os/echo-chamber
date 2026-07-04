@@ -3,12 +3,14 @@ import {
   MAX_DELAY_MS,
   MIN_DELAY_MS,
 } from '../types/config.ts'
+import { Spectrogram } from './Spectrogram.ts'
 
 export type AppEngine = {
   isRunning: boolean
   start(): Promise<void>
   stop(): void
   setDelayMs(delayMs: number): void
+  getAnalyserNodes(): { input: AnalyserNode; output: AnalyserNode } | null
 }
 
 export class App {
@@ -18,6 +20,7 @@ export class App {
   private delaySliderEl!: HTMLInputElement
   private delayValueEl!: HTMLSpanElement
   private toggleButtonEl!: HTMLButtonElement
+  private spectrogram!: Spectrogram
 
   private readonly root: HTMLElement
   private readonly getEngine: () => AppEngine
@@ -59,6 +62,7 @@ export class App {
         <h1>Echo Chamber</h1>
         <p class="tagline">Speak, clap, or make a sound — hear it echoed back.</p>
         <p class="status" role="status">Tap Start and allow microphone access.</p>
+        <div class="spectrogram-panel"></div>
         <div class="controls">
           <label class="delay-control" for="delay">
             Delay
@@ -83,6 +87,9 @@ export class App {
     this.delaySliderEl = this.root.querySelector('#delay')!
     this.delayValueEl = this.root.querySelector('.delay-value')!
     this.toggleButtonEl = this.root.querySelector('#toggle')!
+
+    const spectrogramPanel = this.root.querySelector('.spectrogram-panel') as HTMLElement
+    this.spectrogram = new Spectrogram(spectrogramPanel)
   }
 
   private bindEvents(): void {
@@ -107,6 +114,7 @@ export class App {
 
     if (engine.isRunning) {
       engine.stop()
+      this.spectrogram.detach()
       this.setStatus('Stopped.')
       this.updateToggleButton(false)
       return
@@ -114,9 +122,14 @@ export class App {
 
     try {
       await engine.start()
+      const analysers = engine.getAnalyserNodes()
+      if (analysers) {
+        this.spectrogram.attach(analysers.input, analysers.output)
+      }
       this.setStatus('Listening — speak and hear your echo.')
       this.updateToggleButton(true)
     } catch (error) {
+      this.spectrogram.detach()
       this.handleStartError(error)
     }
   }

@@ -26,6 +26,17 @@ export class EchoEngine {
     return this.graph !== null
   }
 
+  getAnalyserNodes(): { input: AnalyserNode; output: AnalyserNode } | null {
+    if (!this.graph) {
+      return null
+    }
+
+    return {
+      input: this.graph.inputAnalyser,
+      output: this.graph.outputAnalyser,
+    }
+  }
+
   async start(): Promise<void> {
     if (this.isRunning) {
       return
