@@ -108,11 +108,12 @@ These cover the MVP without additional dependencies.
 ```bash
 npm install
 npm run dev      # local dev server
+npm run dev:mobile  # dev server + HTTPS tunnel for phone testing
 npm test         # unit tests
 npm run build    # production build
 ```
 
-See [docs/development.md](docs/development.md) for the TDD workflow, project layout, and manual microphone checklist. See [CONTRIBUTING.md](CONTRIBUTING.md) for branch naming and PR conventions.
+See [docs/development.md](docs/development.md) for the TDD workflow, project layout, mobile testing, and manual microphone checklist. See [CONTRIBUTING.md](CONTRIBUTING.md) for branch naming and PR conventions.
 
 ## Project Status
 
