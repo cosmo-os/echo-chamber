@@ -1,12 +1,15 @@
 import './style.css'
+import { EchoEngine } from './audio/EchoEngine.ts'
+import { App } from './ui/App.ts'
 
-const app = document.querySelector<HTMLDivElement>('#app')!
+const root = document.querySelector<HTMLDivElement>('#app')!
 
-app.innerHTML = `
-  <main class="shell">
-    <h1>Echo Chamber</h1>
-    <p class="tagline">Interactive audio echo — coming soon.</p>
-    <button id="start" type="button" disabled>Start</button>
-    <p class="hint">Audio engine not yet implemented.</p>
-  </main>
-`
+let engine: EchoEngine | null = null
+
+new App(root, () => {
+  engine ??= new EchoEngine({
+    getUserMedia: (constraints) => navigator.mediaDevices.getUserMedia(constraints),
+    createAudioContext: () => new AudioContext(),
+  })
+  return engine
+})

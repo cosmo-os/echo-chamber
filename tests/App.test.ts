@@ -31,9 +31,11 @@ describe('App', () => {
 
   it('calls engine.stop when Stop is clicked while running', async () => {
     const engine = createMockEngine({
-      isRunning: true,
       start: vi.fn(async () => {
         engine.isRunning = true
+      }),
+      stop: vi.fn(() => {
+        engine.isRunning = false
       }),
     })
     const app = new App(root, () => engine)
