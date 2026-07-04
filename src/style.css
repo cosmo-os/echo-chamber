@@ -18,7 +18,7 @@ body {
 }
 
 .shell {
-  max-width: 28rem;
+  max-width: 32rem;
   margin: 0 auto;
   padding: 2rem 1.25rem;
   text-align: center;
@@ -36,9 +36,38 @@ h1 {
 }
 
 .status {
-  margin: 0 0 1.5rem;
+  margin: 0 0 1rem;
   font-size: 0.95rem;
   min-height: 1.5rem;
+}
+
+.spectrogram-panel {
+  margin: 0 0 1.5rem;
+  aspect-ratio: 2.5 / 1;
+  width: 100%;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  background: #f0f0f0;
+  border: 1px solid rgba(26, 26, 26, 0.08);
+}
+
+@media (prefers-color-scheme: dark) {
+  .spectrogram-panel {
+    background: #1a1a1a;
+    border-color: rgba(240, 240, 240, 0.08);
+  }
+}
+
+.spectrogram-canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.spectrogram-legend {
+  margin: 0.35rem 0 0;
+  font-size: 0.8rem;
+  opacity: 0.65;
 }
 
 .status-error {

@@ -13,6 +13,27 @@ export class MockAudioNode {
 
 export class MockDelayNode extends MockAudioNode {
   delayTime = { value: 0 }
+  maxDelayTime = 1
+}
+
+export class MockAnalyserNode extends MockAudioNode {
+  fftSize = 2048
+  smoothingTimeConstant = 0.7
+  frequencyBinCount = 1024
+  private readonly frequencyData: Uint8Array
+
+  constructor() {
+    super()
+    this.frequencyData = new Uint8Array(this.frequencyBinCount)
+  }
+
+  getByteFrequencyData(array: Uint8Array): void {
+    array.set(this.frequencyData.subarray(0, array.length))
+  }
+
+  setFrequencyData(data: Uint8Array): void {
+    this.frequencyData.set(data.subarray(0, this.frequencyBinCount))
+  }
 }
 
 export class MockMediaStreamAudioSourceNode extends MockAudioNode {}
@@ -41,12 +62,23 @@ export class MockAudioContext {
   readonly destination = new MockAudioNode()
   readonly delayNodes: MockDelayNode[] = []
   readonly sourceNodes: MockMediaStreamAudioSourceNode[] = []
+  readonly analyserNodes: MockAnalyserNode[] = []
+  readonly createDelayCalls: number[] = []
   closed = false
   state: AudioContextState = 'running'
+  sampleRate = 48000
 
-  createDelay(): MockDelayNode {
+  createDelay(maxDelayTime = 1): MockDelayNode {
+    this.createDelayCalls.push(maxDelayTime)
     const node = new MockDelayNode()
+    node.maxDelayTime = maxDelayTime
     this.delayNodes.push(node)
+    return node
+  }
+
+  createAnalyser(): MockAnalyserNode {
+    const node = new MockAnalyserNode()
+    this.analyserNodes.push(node)
     return node
   }
 

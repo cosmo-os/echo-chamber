@@ -1,13 +1,18 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { App, type AppEngine } from '../src/ui/App'
 import { DEFAULT_DELAY_MS } from '../src/types/config'
+import { MockAnalyserNode } from './helpers/mockAudioContext'
 
 function createMockEngine(overrides: Partial<AppEngine> = {}): AppEngine {
+  const inputAnalyser = new MockAnalyserNode()
+  const outputAnalyser = new MockAnalyserNode()
+
   return {
     isRunning: false,
     start: vi.fn(async () => {}),
     stop: vi.fn(),
     setDelayMs: vi.fn(),
+    getAnalyserNodes: vi.fn(() => ({ input: inputAnalyser, output: outputAnalyser })),
     ...overrides,
   }
 }
@@ -86,5 +91,32 @@ describe('App', () => {
     const app = new App(root, () => engine)
 
     expect(app.getDelayValue()).toBe(DEFAULT_DELAY_MS)
+  })
+
+  it('renders a spectrogram canvas in the layout', () => {
+    const engine = createMockEngine()
+    new App(root, () => engine)
+
+    expect(root.querySelector('.spectrogram-panel')).not.toBeNull()
+    expect(root.querySelector('.spectrogram-canvas')).not.toBeNull()
+    expect(root.querySelector('.spectrogram-legend')).not.toBeNull()
+  })
+
+  it('attaches the spectrogram after start and detaches on stop', async () => {
+    const engine = createMockEngine({
+      start: vi.fn(async () => {
+        engine.isRunning = true
+      }),
+      stop: vi.fn(() => {
+        engine.isRunning = false
+      }),
+    })
+    const app = new App(root, () => engine)
+
+    await app.clickStart()
+    expect(engine.getAnalyserNodes).toHaveBeenCalled()
+
+    app.clickStop()
+    expect(engine.stop).toHaveBeenCalledOnce()
   })
 })

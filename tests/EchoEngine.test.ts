@@ -100,4 +100,22 @@ describe('EchoEngine', () => {
     const delayNode = context.delayNodes[0] as MockDelayNode
     expect(delayNode.delayTime.value).toBe(DEFAULT_DELAY_MS / 1000)
   })
+
+  it('returns analyser nodes while running and null when stopped', async () => {
+    const { getUserMedia, createAudioContext, context } = createTestDeps()
+    const engine = new EchoEngine({ getUserMedia, createAudioContext })
+
+    expect(engine.getAnalyserNodes()).toBeNull()
+
+    await engine.start()
+
+    const analysers = engine.getAnalyserNodes()
+    expect(analysers).not.toBeNull()
+    expect(analysers!.input).toBe(context.analyserNodes[0])
+    expect(analysers!.output).toBe(context.analyserNodes[1])
+
+    engine.stop()
+
+    expect(engine.getAnalyserNodes()).toBeNull()
+  })
 })

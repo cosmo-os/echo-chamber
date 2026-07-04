@@ -53,7 +53,7 @@ It is not yet clear which experience will be most interesting or entertaining. T
 ### 4. UX
 
 - Single delay knob vs. presets ("cave", "robot", "choir").
-- Visual feedback (waveform, level meter) vs. audio-only.
+- ~~Visual feedback (waveform, level meter) vs. audio-only.~~ **Decided:** scrolling spectrogram with live input (warm) and delayed output overlay (blue); see `src/ui/Spectrogram.ts`.
 - Clear handling of permission-denied and silent-mic error states.
 
 ### Initial MVP
@@ -119,7 +119,7 @@ See [docs/development.md](docs/development.md) for the TDD workflow, project lay
 
 ## Project Status
 
-**MVP complete.** Fixed-delay echo with Start/Stop and delay control works in the browser. Volume gating and other experiments remain in the open design questions.
+**MVP complete.** Fixed-delay echo with Start/Stop and delay control works in the browser. A canvas spectrogram shows live mic input and a synced echo overlay. Volume gating and other experiments remain in the open design questions.
 
 ### Next steps
 
