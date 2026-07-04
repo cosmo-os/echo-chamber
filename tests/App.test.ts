@@ -8,6 +8,7 @@ function createMockEngine(overrides: Partial<AppEngine> = {}): AppEngine {
     start: vi.fn(async () => {}),
     stop: vi.fn(),
     setDelayMs: vi.fn(),
+    setThreshold: vi.fn(),
     ...overrides,
   }
 }
@@ -86,5 +87,14 @@ describe('App', () => {
     const app = new App(root, () => engine)
 
     expect(app.getDelayValue()).toBe(DEFAULT_DELAY_MS)
+  })
+
+  it('calls setThreshold when the sensitivity slider changes', () => {
+    const engine = createMockEngine()
+    const app = new App(root, () => engine)
+
+    app.setSensitivitySlider(25)
+
+    expect(engine.setThreshold).toHaveBeenCalledWith(0.25)
   })
 })
