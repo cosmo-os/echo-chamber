@@ -17,6 +17,18 @@ export class MockDelayNode extends MockAudioNode {
 
 export class MockMediaStreamAudioSourceNode extends MockAudioNode {}
 
+export class MockAnalyserNode extends MockAudioNode {
+  fillValue = 0
+
+  getFloatTimeDomainData(array: Float32Array): void {
+    array.fill(this.fillValue)
+  }
+}
+
+export class MockGainNode extends MockAudioNode {
+  gain = { value: 1 }
+}
+
 export class MockMediaStreamTrack {
   stopped = false
 
@@ -41,12 +53,26 @@ export class MockAudioContext {
   readonly destination = new MockAudioNode()
   readonly delayNodes: MockDelayNode[] = []
   readonly sourceNodes: MockMediaStreamAudioSourceNode[] = []
+  readonly analyserNodes: MockAnalyserNode[] = []
+  readonly gainNodes: MockGainNode[] = []
   closed = false
   state: AudioContextState = 'running'
 
   createDelay(): MockDelayNode {
     const node = new MockDelayNode()
     this.delayNodes.push(node)
+    return node
+  }
+
+  createAnalyser(): MockAnalyserNode {
+    const node = new MockAnalyserNode()
+    this.analyserNodes.push(node)
+    return node
+  }
+
+  createGain(): MockGainNode {
+    const node = new MockGainNode()
+    this.gainNodes.push(node)
     return node
   }
 

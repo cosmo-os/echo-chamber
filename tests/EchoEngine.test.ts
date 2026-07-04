@@ -12,8 +12,22 @@ function createTestDeps() {
   const context = new MockAudioContext()
   const getUserMedia = vi.fn(async () => stream as unknown as MediaStream)
   const createAudioContext = vi.fn(() => context as unknown as AudioContext)
+  let frameCallback: (() => void) | null = null
+  const scheduler = {
+    requestFrame: vi.fn((callback: () => void) => {
+      frameCallback = callback
+      return 1
+    }),
+    cancelFrame: vi.fn(() => {
+      frameCallback = null
+    }),
+  }
 
-  return { stream, context, getUserMedia, createAudioContext }
+  const runFrame = () => {
+    frameCallback?.()
+  }
+
+  return { stream, context, getUserMedia, createAudioContext, scheduler, runFrame }
 }
 
 describe('EchoEngine', () => {
@@ -99,5 +113,61 @@ describe('EchoEngine', () => {
 
     const delayNode = context.delayNodes[0] as MockDelayNode
     expect(delayNode.delayTime.value).toBe(DEFAULT_DELAY_MS / 1000)
+  })
+
+  it('mutes output when input is below threshold', async () => {
+    const { getUserMedia, createAudioContext, context, scheduler, runFrame } =
+      createTestDeps()
+    const engine = new EchoEngine(
+      { getUserMedia, createAudioContext, scheduler },
+      { delayMs: 500, threshold: 0.5 },
+    )
+
+    await engine.start()
+    context.analyserNodes[0].fillValue = 0
+    runFrame()
+
+    expect(context.gainNodes[0].gain.value).toBe(0)
+  })
+
+  it('unmutes output when input is above threshold', async () => {
+    const { getUserMedia, createAudioContext, context, scheduler, runFrame } =
+      createTestDeps()
+    const engine = new EchoEngine(
+      { getUserMedia, createAudioContext, scheduler },
+      { delayMs: 500, threshold: 0.5 },
+    )
+
+    await engine.start()
+    context.analyserNodes[0].fillValue = 1
+    runFrame()
+
+    expect(context.gainNodes[0].gain.value).toBe(1)
+  })
+
+  it('updates threshold while running', async () => {
+    const { getUserMedia, createAudioContext, context, scheduler, runFrame } =
+      createTestDeps()
+    const engine = new EchoEngine(
+      { getUserMedia, createAudioContext, scheduler },
+      { delayMs: 500, threshold: 0.9 },
+    )
+
+    await engine.start()
+    context.analyserNodes[0].fillValue = 0.5
+    engine.setThreshold(0.4)
+    runFrame()
+
+    expect(context.gainNodes[0].gain.value).toBe(1)
+  })
+
+  it('cancels the gating loop on stop', async () => {
+    const { getUserMedia, createAudioContext, scheduler } = createTestDeps()
+    const engine = new EchoEngine({ getUserMedia, createAudioContext, scheduler })
+
+    await engine.start()
+    engine.stop()
+
+    expect(scheduler.cancelFrame).toHaveBeenCalledWith(1)
   })
 })

@@ -21,7 +21,7 @@ describe('createEchoGraph', () => {
     expect(delayNode.delayTime.value).toBe(0.5)
   })
 
-  it('connects source through delay to destination', () => {
+  it('connects source through delay and gain to destination', () => {
     const context = new MockAudioContext()
     const stream = createMockMediaStream()
 
@@ -29,9 +29,40 @@ describe('createEchoGraph', () => {
 
     const source = context.sourceNodes[0]
     const delay = context.delayNodes[0]
+    const gain = context.gainNodes[0]
 
-    expect(source.connectCalls[0]).toBe(delay)
-    expect(delay.connectCalls[0]).toBe(context.destination)
+    expect(source.connectCalls).toContain(delay)
+    expect(source.connectCalls).toContain(context.analyserNodes[0])
+    expect(delay.connectCalls[0]).toBe(gain)
+    expect(gain.connectCalls[0]).toBe(context.destination)
+  })
+
+  it('reads RMS from the analyser tap', () => {
+    const context = new MockAudioContext()
+    const stream = createMockMediaStream()
+
+    const graph = createEchoGraph(
+      context as unknown as AudioContext,
+      stream,
+      { delayMs: 500 },
+    )
+
+    context.analyserNodes[0].fillValue = 1
+    expect(graph.readInputRms()).toBeCloseTo(1, 5)
+  })
+
+  it('sets output gain on the gain node', () => {
+    const context = new MockAudioContext()
+    const stream = createMockMediaStream()
+
+    const graph = createEchoGraph(
+      context as unknown as AudioContext,
+      stream,
+      { delayMs: 500 },
+    )
+
+    graph.setOutputGain(0)
+    expect(context.gainNodes[0].gain.value).toBe(0)
   })
 
   it('updates delay time when setDelayMs is called', () => {
