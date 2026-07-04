@@ -95,6 +95,6 @@ describe('App', () => {
 
     app.setSensitivitySlider(25)
 
-    expect(engine.setThreshold).toHaveBeenCalledWith(0.25)
+    expect(engine.setThreshold).toHaveBeenCalledWith(0.0025)
   })
 })

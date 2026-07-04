@@ -1,8 +1,11 @@
 import {
   DEFAULT_DELAY_MS,
   DEFAULT_THRESHOLD,
+  formatSensitivityPercent,
   MAX_DELAY_MS,
   MIN_DELAY_MS,
+  sensitivitySliderToThreshold,
+  thresholdToSensitivitySlider,
 } from '../types/config.ts'
 
 export type AppEngine = {
@@ -90,7 +93,7 @@ export class App {
           />
           <label class="delay-control" for="sensitivity">
             Sensitivity
-            <span class="sensitivity-value">${Math.round(DEFAULT_THRESHOLD * 100)}</span>
+            <span class="sensitivity-value">${formatSensitivityPercent(DEFAULT_THRESHOLD)}</span>
             %
           </label>
           <input
@@ -100,7 +103,7 @@ export class App {
             min="0"
             max="100"
             step="1"
-            value="${Math.round(DEFAULT_THRESHOLD * 100)}"
+            value="${thresholdToSensitivitySlider(DEFAULT_THRESHOLD)}"
           />
           <button id="toggle" type="button" class="primary-button">Start</button>
         </div>
@@ -127,9 +130,9 @@ export class App {
     })
 
     this.sensitivitySliderEl.addEventListener('input', () => {
-      const percent = Number(this.sensitivitySliderEl.value)
-      this.threshold = percent / 100
-      this.sensitivityValueEl.textContent = String(percent)
+      const sliderValue = Number(this.sensitivitySliderEl.value)
+      this.threshold = sensitivitySliderToThreshold(sliderValue)
+      this.sensitivityValueEl.textContent = formatSensitivityPercent(this.threshold)
       this.getEngineInstance().setThreshold(this.threshold)
     })
   }
