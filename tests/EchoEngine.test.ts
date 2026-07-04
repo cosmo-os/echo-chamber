@@ -35,7 +35,7 @@ describe('EchoEngine', () => {
     const { getUserMedia, createAudioContext, context } = createTestDeps()
     const engine = new EchoEngine(
       { getUserMedia, createAudioContext },
-      { delayMs: 750, threshold: 0.1 },
+      { delayMs: 750 },
     )
 
     await engine.start()
