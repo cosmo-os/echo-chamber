@@ -47,7 +47,15 @@ Pure logic (config validation) lives in testable modules. Browser APIs are mocke
 
 Phones require **HTTPS** for microphone access. A plain `http://192.168.x.x` URL on your LAN will load the page but block the mic.
 
-### One-time setup
+### Production (no local server)
+
+The deployed app is always available at [https://cosmo-os.github.io/echo-chamber/](https://cosmo-os.github.io/echo-chamber/). Open that URL on your phone to test the current `main` branch — no Mac or tunnel needed.
+
+### Local changes (`dev:mobile`)
+
+Use this when iterating on unmerged code.
+
+#### One-time setup
 
 Install [cloudflared](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/) (the tunnel used by `dev:mobile`):
 
@@ -77,7 +85,7 @@ Open that URL on your phone (same Wi‑Fi is fine; traffic goes through the tunn
 4. Confirm echo is audible at the configured delay
 5. Tap **Stop** and confirm the mic is released
 
-The tunnel URL changes each time you restart `dev:mobile`. For longer-lived testing, deploy a production build to any static host with HTTPS (see [README](../README.md#deployment)).
+The tunnel URL changes each time you restart `dev:mobile`. For testing merged code, use the [production URL](https://cosmo-os.github.io/echo-chamber/) instead.
 
 ### Troubleshooting
 
