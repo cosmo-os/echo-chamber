@@ -61,8 +61,9 @@ It is not yet clear which experience will be most interesting or entertaining. T
 The first version should be deliberately small:
 
 - Fixed delay replay
-- Volume-threshold gating (ignore background noise below a threshold)
 - No audio transforms
+
+Volume-threshold gating was explored but deferred — it did not improve the experience.
 
 Everything else in this section is follow-on experimentation.
 
@@ -115,13 +116,12 @@ See [docs/development.md](docs/development.md) for the TDD workflow, project lay
 
 ## Project Status
 
-**Scaffolded — MVP in progress.** Vite + TypeScript tooling, Vitest, and CI are in place. Audio engine and UI controls are not yet implemented.
+**MVP complete.** Fixed-delay echo with Start/Stop and delay control works in the browser. Volume gating and other experiments remain in the open design questions.
 
 ### Next steps
 
 1. ~~Scaffold Vite + TypeScript~~
-2. Implement microphone capture and fixed-delay echo MVP
-3. Add volume-threshold gating
-4. Iterate on the open design questions above
+2. ~~Implement microphone capture and fixed-delay echo MVP~~
+3. Iterate on the open design questions above (pause-aware replay, transforms, optional gating)
 
 Contributions and experiments should update the Open Design Questions section as decisions are made.

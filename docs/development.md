@@ -22,15 +22,15 @@
 ```
 src/
   main.ts          Entry point and bootstrap
-  audio/           Web Audio pipeline (upcoming)
-  types/           Config and shared types (upcoming)
-  ui/              DOM and controls (upcoming)
+  audio/           Web Audio pipeline (graph, engine)
+  types/           Config and shared types
+  ui/              DOM and controls
 tests/
   helpers/         Shared mocks (e.g. AudioContext)
   *.test.ts        Unit tests
 ```
 
-Pure logic (RMS computation, config validation) lives in testable modules. Browser APIs are mocked in unit tests.
+Pure logic (config validation) lives in testable modules. Browser APIs are mocked in unit tests.
 
 ## Test-driven workflow
 
