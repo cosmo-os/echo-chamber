@@ -115,13 +115,13 @@ See [docs/development.md](docs/development.md) for the TDD workflow, project lay
 
 ## Project Status
 
-**Scaffolded — MVP in progress.** Vite + TypeScript tooling, Vitest, and CI are in place. Audio engine and UI controls are not yet implemented.
+**MVP complete.** The app captures microphone input, replays it with a configurable delay, and gates output by volume threshold. Open design questions (pause-aware replay, transforms, presets) remain for follow-on work.
 
 ### Next steps
 
 1. ~~Scaffold Vite + TypeScript~~
-2. Implement microphone capture and fixed-delay echo MVP
-3. Add volume-threshold gating
+2. ~~Implement microphone capture and fixed-delay echo MVP~~
+3. ~~Add volume-threshold gating~~
 4. Iterate on the open design questions above
 
 Contributions and experiments should update the Open Design Questions section as decisions are made.
