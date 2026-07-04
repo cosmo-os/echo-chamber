@@ -17,10 +17,32 @@ export class MockDelayNode extends MockAudioNode {
 
 export class MockMediaStreamAudioSourceNode extends MockAudioNode {}
 
+export class MockMediaStreamTrack {
+  stopped = false
+
+  stop(): void {
+    this.stopped = true
+  }
+}
+
+export class MockMediaStream {
+  readonly tracks: MockMediaStreamTrack[]
+
+  constructor(trackCount = 1) {
+    this.tracks = Array.from({ length: trackCount }, () => new MockMediaStreamTrack())
+  }
+
+  getTracks(): MockMediaStreamTrack[] {
+    return this.tracks
+  }
+}
+
 export class MockAudioContext {
   readonly destination = new MockAudioNode()
   readonly delayNodes: MockDelayNode[] = []
   readonly sourceNodes: MockMediaStreamAudioSourceNode[] = []
+  closed = false
+  state: AudioContextState = 'running'
 
   createDelay(): MockDelayNode {
     const node = new MockDelayNode()
@@ -33,8 +55,17 @@ export class MockAudioContext {
     this.sourceNodes.push(node)
     return node
   }
+
+  async resume(): Promise<void> {
+    this.state = 'running'
+  }
+
+  async close(): Promise<void> {
+    this.closed = true
+    this.state = 'closed'
+  }
 }
 
-export function createMockMediaStream(): MediaStream {
-  return {} as MediaStream
+export function createMockMediaStream(): MockMediaStream {
+  return new MockMediaStream()
 }
