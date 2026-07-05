@@ -1,6 +1,9 @@
 import './style.css'
 import { EchoEngine } from './audio/EchoEngine.ts'
+import { installMobileShell } from './mobileShell.ts'
 import { App } from './ui/App.ts'
+
+installMobileShell()
 
 const root = document.querySelector<HTMLDivElement>('#app')!
 

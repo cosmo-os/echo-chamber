@@ -101,7 +101,7 @@ The tunnel URL changes each time you restart `dev:mobile`. For testing merged co
 | Issue | Fix |
 |-------|-----|
 | `cloudflared not found` | Run `brew install cloudflared` |
-| `Blocked request. This host … is not allowed` | Use `npm run dev:mobile` (not `npm run dev`); it sets `MOBILE_DEV=1` so Vite allows tunnel hostnames |
+| `Blocked request. This host … is not allowed` | Restart `npm run dev:mobile`; Vite allows tunnel hostnames via `server.allowedHosts` in `vite.config.ts` |
 | No mic prompt | URL must be `https://`, not `http://192.168…` |
 | iOS: no audio after Start | Tap Start directly; iOS blocks autoplay without a user gesture |
 
@@ -115,6 +115,7 @@ Copy this into PR descriptions when audio behavior changes:
 - [ ] Stop ends playback and releases the microphone
 - [ ] Denied permission shows a clear error message
 - [ ] (Mobile Safari) Start works after a direct tap — no autoplay without gesture
+- [ ] (Mobile Safari) UI is centered with safe-area padding; double-tap on controls does not zoom
 
 ## Mocking browser audio APIs
 
