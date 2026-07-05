@@ -5,38 +5,17 @@ on:
     branches: [main]
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
 concurrency:
   group: pages
   cancel-in-progress: true
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-
-      - name: Use GitHub Actions as Pages source
-        run: |
-          status="$(curl -s -o /tmp/pages.json -w "%{http_code}" \
-            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            -H "Accept: application/vnd.github+json" \
-            "https://api.github.com/repos/${{ github.repository }}/pages")"
-          if [ "$status" = "200" ]; then
-            build_type="$(jq -r '.build_type' /tmp/pages.json)"
-            if [ "$build_type" != "workflow" ]; then
-              curl -fsS -X PUT \
-                -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-                -H "Accept: application/vnd.github+json" \
-                "https://api.github.com/repos/${{ github.repository }}/pages" \
-                -d '{"build_type":"workflow"}'
-            fi
-          fi
-
-      - uses: actions/configure-pages@v5
 
       - uses: actions/setup-node@v5
         with:
@@ -49,16 +28,10 @@ jobs:
         env:
           GITHUB_PAGES: 'true'
 
-      - uses: actions/upload-pages-artifact@v5
+      - name: Deploy to gh-pages branch
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          path: dist
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v5
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          publish_branch: gh-pages
+          force_orphan: true
