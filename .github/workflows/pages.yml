@@ -38,6 +38,10 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    env:
+      # actions/deploy-pages@v5 still bundles @actions/artifact@2.x, which loads
+      # Node's deprecated punycode module. See actions/deploy-pages#413.
+      NODE_OPTIONS: --disable-warning=DEP0040
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url || steps.deployment-retry-2.outputs.page_url || steps.deployment-retry-3.outputs.page_url || steps.deployment-retry-4.outputs.page_url }}
