@@ -24,7 +24,7 @@ export function createEchoGraph(
 
   const inputAnalyser = context.createAnalyser()
   inputAnalyser.fftSize = 2048
-  inputAnalyser.smoothingTimeConstant = 0.7
+  inputAnalyser.smoothingTimeConstant = 0.3
 
   const outputAnalyser = context.createAnalyser()
   outputAnalyser.fftSize = 2048

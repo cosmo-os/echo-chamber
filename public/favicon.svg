@@ -1,18 +1,21 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
-  <rect width="48" height="48" fill="#EDE8DC"/>
-  <path
-    d="M10 28c2-8 8-14 16-14 6 0 10 3 12 8 2-1 5-1 7 1 2 2 2 5 0 7-2 2-5 3-8 2-1 4-5 7-10 7-8 0-14-6-17-11z"
-    fill="#F8F6F0"
-    stroke="#2C2C2C"
-    stroke-width="2"
-    stroke-linejoin="round"
-  />
-  <path
-    d="M35 20l8-4-2 6 4 2-8 1"
-    fill="#E8956A"
-    stroke="#2C2C2C"
-    stroke-width="2"
-    stroke-linejoin="round"
-  />
-  <circle cx="22" cy="22" r="2" fill="#2C2C2C"/>
+  <defs>
+    <linearGradient id="holo" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FFC8E8"/>
+      <stop offset="50%" stop-color="#C8E4FF"/>
+      <stop offset="100%" stop-color="#C8FFE8"/>
+    </linearGradient>
+    <linearGradient id="screen" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#B8D8F8"/>
+      <stop offset="100%" stop-color="#88B8D8"/>
+    </linearGradient>
+  </defs>
+  <rect width="48" height="48" rx="10" fill="url(#holo)"/>
+  <rect x="8" y="10" width="32" height="22" rx="3" fill="#B8A8D8"/>
+  <rect x="10" y="12" width="28" height="18" rx="2" fill="url(#screen)"/>
+  <ellipse cx="28" cy="26" rx="7" ry="4" fill="#F8F8F0" stroke="#505858" stroke-width="1"/>
+  <circle cx="33" cy="23" r="3.5" fill="#FAFAF4" stroke="#505858" stroke-width="1"/>
+  <circle cx="34" cy="22.5" r="0.8" fill="#404040"/>
+  <circle cx="36" cy="34" r="5" fill="#88E8C8" stroke="white" stroke-width="1"/>
+  <text x="36" y="36" text-anchor="middle" fill="#386858" font-family="sans-serif" font-size="5" font-weight="bold">B</text>
 </svg>

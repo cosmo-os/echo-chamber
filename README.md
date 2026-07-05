@@ -1,10 +1,16 @@
-# Echo Chamber
+# Goose Lake
 
-An interactive, client-side audio experience that listens through the device microphone, captures distinctive sounds, and replays them with a delay.
+An interactive, client-side audio toy built on Echo Chamber. Speak, honk, peep, or bark into the mic — sounds echo back with a delay while the lake reacts on screen.
 
 ## Overview
 
-Echo Chamber turns the microphone into a playful feedback loop. The app listens for sounds, captures them, and plays them back after a short delay — so you hear yourself (or your environment) echoed back in real time.
+Goose Lake wraps the echo engine in a pastel Game Boy shell. The mic still drives a fixed-delay echo loop, but the lake scene responds to what it hears:
+
+- **Quiet peeps** hatch eggs into swimming geese
+- **Loud honks** send geese flapping in from the sky
+- **Dog barks** send a dog sprinting off the grass and splashing into the water
+
+Use **SELECT** for crosshairs, the **D-pad** (or WASD) to aim, and **A** (or `O`) to shoot a goose in a sparkle poof.
 
 ```mermaid
 flowchart LR
@@ -53,7 +59,7 @@ It is not yet clear which experience will be most interesting or entertaining. T
 ### 4. UX
 
 - Single delay knob vs. presets ("cave", "robot", "choir").
-- ~~Visual feedback (waveform, level meter) vs. audio-only.~~ **Decided:** scrolling spectrogram with live input (warm) and delayed output overlay (blue); see `src/ui/Spectrogram.ts`.
+- ~~Visual feedback (waveform, level meter) vs. audio-only.~~ **Decided:** interactive lake canvas with Pokémon-inspired sprites; see `src/ui/Lake.ts`.
 - Clear handling of permission-denied and silent-mic error states.
 
 ### Initial MVP
@@ -119,7 +125,7 @@ See [docs/development.md](docs/development.md) for the TDD workflow, project lay
 
 ## Project Status
 
-**MVP complete.** Fixed-delay echo with Start/Stop and delay control works in the browser. A canvas spectrogram shows live mic input and a synced echo overlay. Volume gating and other experiments remain in the open design questions.
+**MVP complete.** Fixed-delay echo with Game Boy controls works in the browser. The lake canvas reacts to mic input with geese, eggs, dogs, and a crosshair mini-game. Volume gating and other experiments remain in the open design questions.
 
 ### Next steps
 

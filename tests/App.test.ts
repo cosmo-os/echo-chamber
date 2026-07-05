@@ -70,7 +70,7 @@ describe('App', () => {
 
     await app.clickStart()
 
-    expect(app.getStatusText()).toMatch(/permission/i)
+    expect(app.getStatusText()).toMatch(/denied/i)
   })
 
   it('shows a no microphone message for NotFoundError', async () => {
@@ -83,7 +83,7 @@ describe('App', () => {
 
     await app.clickStart()
 
-    expect(app.getStatusText()).toMatch(/microphone/i)
+    expect(app.getStatusText()).toMatch(/mic/i)
   })
 
   it('renders with the default delay value', () => {
@@ -93,16 +93,27 @@ describe('App', () => {
     expect(app.getDelayValue()).toBe(DEFAULT_DELAY_MS)
   })
 
-  it('renders a spectrogram canvas in the layout', () => {
+  it('renders a lake canvas in the layout', () => {
     const engine = createMockEngine()
     new App(root, () => engine)
 
-    expect(root.querySelector('.spectrogram-panel')).not.toBeNull()
-    expect(root.querySelector('.spectrogram-canvas')).not.toBeNull()
-    expect(root.querySelector('.spectrogram-legend')).not.toBeNull()
+    expect(root.querySelector('.lake-panel')).not.toBeNull()
+    expect(root.querySelector('.lake-canvas')).not.toBeNull()
+    expect(root.querySelector('.lake-legend')).not.toBeNull()
   })
 
-  it('attaches the spectrogram after start and detaches on stop', async () => {
+  it('renders pill START/SELECT and circular A/B buttons', () => {
+    const engine = createMockEngine()
+    new App(root, () => engine)
+
+    expect(root.querySelector('#start')).not.toBeNull()
+    expect(root.querySelector('#select')).not.toBeNull()
+    expect(root.querySelector('#btn-a')).not.toBeNull()
+    expect(root.querySelector('#btn-b')).not.toBeNull()
+    expect(root.querySelector('.start-select-row')).not.toBeNull()
+  })
+
+  it('attaches the lake after start and detaches on stop', async () => {
     const engine = createMockEngine({
       start: vi.fn(async () => {
         engine.isRunning = true
