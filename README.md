@@ -101,9 +101,9 @@ These cover the MVP without additional dependencies.
 
 ### Deployment
 
-Production is hosted on **GitHub Pages** at [https://cosmo-os.github.io/echo-chamber/](https://cosmo-os.github.io/echo-chamber/). Merges to `main` build `dist/` and push it to the `gh-pages` branch.
+Production is hosted on **GitHub Pages** at [https://cosmo-os.github.io/echo-chamber/](https://cosmo-os.github.io/echo-chamber/). Merges to `main` trigger the **Deploy Pages** workflow, which builds `dist/` and publishes it via GitHub Actions.
 
-**One-time repo setup:** In [Pages settings](https://github.com/cosmo-os/echo-chamber/settings/pages), set **Deploy from a branch** → branch `gh-pages` → folder `/` (root).
+**One-time repo setup:** In [Pages settings](https://github.com/cosmo-os/echo-chamber/settings/pages), set **Source** to **GitHub Actions** (not “Deploy from a branch”). The `Deploy Pages` workflow handles the rest.
 
 - Output is static files only (Vite `dist/`)
 - **HTTPS is required** for microphone access on non-localhost origins (provided automatically by Pages)
