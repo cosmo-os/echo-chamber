@@ -24,7 +24,7 @@ jobs:
 
       - uses: actions/setup-node@v5
         with:
-          node-version: 22
+          node-version: 24
           cache: npm
 
       - run: npm ci
@@ -40,11 +40,34 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: github-pages
-      url: ${{ fromJSON(steps.deployment.outputs.outputs).page_url }}
+      url: ${{ steps.deployment.outputs.page_url || steps.deployment-retry-2.outputs.page_url || steps.deployment-retry-3.outputs.page_url || steps.deployment-retry-4.outputs.page_url }}
     steps:
       - id: deployment
-        uses: Wandalen/wretry.action@v3.8.0
-        with:
-          action: actions/deploy-pages@v5
-          attempt_limit: 4
-          attempt_delay: 30000
+        uses: actions/deploy-pages@v5
+        continue-on-error: true
+
+      - name: Wait before deploy retry
+        if: steps.deployment.outcome == 'failure'
+        run: sleep 30
+
+      - id: deployment-retry-2
+        if: steps.deployment.outcome == 'failure'
+        uses: actions/deploy-pages@v5
+        continue-on-error: true
+
+      - name: Wait before deploy retry
+        if: steps.deployment.outcome == 'failure' && steps.deployment-retry-2.outcome == 'failure'
+        run: sleep 30
+
+      - id: deployment-retry-3
+        if: steps.deployment.outcome == 'failure' && steps.deployment-retry-2.outcome == 'failure'
+        uses: actions/deploy-pages@v5
+        continue-on-error: true
+
+      - name: Wait before deploy retry
+        if: steps.deployment.outcome == 'failure' && steps.deployment-retry-2.outcome == 'failure' && steps.deployment-retry-3.outcome == 'failure'
+        run: sleep 30
+
+      - id: deployment-retry-4
+        if: steps.deployment.outcome == 'failure' && steps.deployment-retry-2.outcome == 'failure' && steps.deployment-retry-3.outcome == 'failure'
+        uses: actions/deploy-pages@v5
