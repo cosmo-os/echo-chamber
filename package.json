@@ -7,7 +7,9 @@
     "dev": "vite",
     "dev:mobile": "node scripts/dev-mobile.mjs",
     "build": "tsc && vite build",
+    "build:pages": "GITHUB_PAGES=true npm run build",
     "preview": "vite preview",
+    "preview:pages": "GITHUB_PAGES=true vite preview --base /echo-chamber/",
     "test": "vitest run",
     "test:watch": "vitest"
   },

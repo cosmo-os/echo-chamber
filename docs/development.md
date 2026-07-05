@@ -51,6 +51,15 @@ Phones require **HTTPS** for microphone access. A plain `http://192.168.x.x` URL
 
 The deployed app is always available at [https://cosmo-os.github.io/echo-chamber/](https://cosmo-os.github.io/echo-chamber/). Open that URL on your phone to test the current `main` branch — no Mac or tunnel needed.
 
+Deployments use the **Deploy Pages** GitHub Actions workflow. To verify a production build locally before merge:
+
+```bash
+npm run build:pages
+npm run preview:pages
+```
+
+Then open the printed URL (paths use the `/echo-chamber/` base, matching Pages).
+
 ### Local changes (`dev:mobile`)
 
 Use this when iterating on unmerged code.
