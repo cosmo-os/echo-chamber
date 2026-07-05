@@ -3,7 +3,7 @@ import {
   MAX_DELAY_MS,
   MIN_DELAY_MS,
 } from '../types/config.ts'
-import { Spectrogram } from './Spectrogram.ts'
+import { Lake } from './Lake.ts'
 
 export type AppEngine = {
   isRunning: boolean
@@ -19,8 +19,11 @@ export class App {
   private statusEl!: HTMLParagraphElement
   private delaySliderEl!: HTMLInputElement
   private delayValueEl!: HTMLSpanElement
-  private toggleButtonEl!: HTMLButtonElement
-  private spectrogram!: Spectrogram
+  private startButtonEl!: HTMLButtonElement
+  private selectButtonEl!: HTMLButtonElement
+  private btnAEl!: HTMLButtonElement
+  private lake!: Lake
+  private keyHandler: ((event: KeyboardEvent) => void) | null = null
 
   private readonly root: HTMLElement
   private readonly getEngine: () => AppEngine
@@ -33,12 +36,12 @@ export class App {
   }
 
   async clickStart(): Promise<void> {
-    this.toggleButtonEl.click()
+    this.startButtonEl.click()
     await this.pendingStart
   }
 
   clickStop(): void {
-    this.toggleButtonEl.click()
+    this.startButtonEl.click()
   }
 
   setDelaySlider(value: number): void {
@@ -58,27 +61,59 @@ export class App {
 
   private render(): void {
     this.root.innerHTML = `
-      <main class="shell">
-        <h1>Honk Chamber</h1>
-        <p class="tagline">Honk, clap, or cause a ruckus — hear it echoed back.</p>
-        <p class="status" role="status">Ready to make trouble? Tap Honk! and allow microphone access.</p>
-        <div class="spectrogram-panel"></div>
-        <div class="controls">
-          <label class="delay-control" for="delay">
-            Delay
-            <span class="delay-value">${DEFAULT_DELAY_MS}</span>
-            ms
-          </label>
-          <input
-            id="delay"
-            class="delay-slider"
-            type="range"
-            min="${MIN_DELAY_MS}"
-            max="${MAX_DELAY_MS}"
-            step="50"
-            value="${DEFAULT_DELAY_MS}"
-          />
-          <button id="toggle" type="button" class="primary-button">Honk!</button>
+      <main class="handheld">
+        <div class="gb-device">
+          <div class="gb-screen-section">
+            <p class="gb-brand">✦ goose lake ✦</p>
+            <div class="screen-bezel">
+              <p class="status lcd-text" role="status">PRESS START · ALLOW MIC</p>
+              <div class="lake-panel"></div>
+            </div>
+          </div>
+
+          <div class="gamepad">
+            <div class="dpad-cluster">
+              <div class="dpad" role="group" aria-label="Crosshair controls">
+                <button type="button" class="dpad-btn dpad-up" aria-label="Move crosshairs up"></button>
+                <button type="button" class="dpad-btn dpad-left" aria-label="Move crosshairs left"></button>
+                <span class="dpad-center" aria-hidden="true"></span>
+                <button type="button" class="dpad-btn dpad-right" aria-label="Move crosshairs right"></button>
+                <button type="button" class="dpad-btn dpad-down" aria-label="Move crosshairs down"></button>
+              </div>
+              <span class="pad-label">AIM</span>
+            </div>
+
+            <div class="delay-cluster">
+              <label class="delay-control lcd-text" for="delay">
+                ECHO
+                <span class="delay-value">${DEFAULT_DELAY_MS}</span>
+                MS
+              </label>
+              <input
+                id="delay"
+                class="delay-slider"
+                type="range"
+                min="${MIN_DELAY_MS}"
+                max="${MAX_DELAY_MS}"
+                step="50"
+                value="${DEFAULT_DELAY_MS}"
+              />
+            </div>
+
+            <div class="ab-cluster">
+              <button id="btn-b" type="button" class="btn-circle btn-b" aria-label="B button">B</button>
+              <button id="btn-a" type="button" class="btn-circle btn-a" aria-label="Shoot goose">A</button>
+            </div>
+          </div>
+
+          <div class="start-select-row">
+            <button id="select" type="button" class="btn-pill btn-select" aria-pressed="false">
+              SELECT
+            </button>
+            <button id="start" type="button" class="btn-pill btn-start" aria-pressed="false">
+              START
+            </button>
+          </div>
         </div>
       </main>
     `
@@ -86,15 +121,25 @@ export class App {
     this.statusEl = this.root.querySelector('.status')!
     this.delaySliderEl = this.root.querySelector('#delay')!
     this.delayValueEl = this.root.querySelector('.delay-value')!
-    this.toggleButtonEl = this.root.querySelector('#toggle')!
+    this.startButtonEl = this.root.querySelector('#start')!
+    this.selectButtonEl = this.root.querySelector('#select')!
+    this.btnAEl = this.root.querySelector('#btn-a')!
 
-    const spectrogramPanel = this.root.querySelector('.spectrogram-panel') as HTMLElement
-    this.spectrogram = new Spectrogram(spectrogramPanel)
+    const lakePanel = this.root.querySelector('.lake-panel') as HTMLElement
+    this.lake = new Lake(lakePanel)
   }
 
   private bindEvents(): void {
-    this.toggleButtonEl.addEventListener('click', () => {
-      this.pendingStart = this.handleToggle()
+    this.startButtonEl.addEventListener('click', () => {
+      this.pendingStart = this.handleStartToggle()
+    })
+
+    this.selectButtonEl.addEventListener('click', () => {
+      this.handleSelectToggle()
+    })
+
+    this.btnAEl.addEventListener('click', () => {
+      this.handleShoot()
     })
 
     this.delaySliderEl.addEventListener('input', () => {
@@ -102,6 +147,99 @@ export class App {
       this.delayValueEl.textContent = String(this.delayMs)
       this.getEngineInstance().setDelayMs(this.delayMs)
     })
+
+    this.bindDpad(this.root.querySelector('.dpad-up')!, 0, -1)
+    this.bindDpad(this.root.querySelector('.dpad-down')!, 0, 1)
+    this.bindDpad(this.root.querySelector('.dpad-left')!, -1, 0)
+    this.bindDpad(this.root.querySelector('.dpad-right')!, 1, 0)
+
+    this.keyHandler = (event: KeyboardEvent) => {
+      if (event.repeat) {
+        return
+      }
+
+      const key = event.key.toLowerCase()
+
+      if (key === 'enter') {
+        event.preventDefault()
+        this.startButtonEl.click()
+        return
+      }
+
+      if (key === 'o') {
+        event.preventDefault()
+        this.handleShoot()
+        return
+      }
+
+      if (!this.lake.isCrosshairsActive()) {
+        return
+      }
+
+      switch (key) {
+        case 'w':
+          event.preventDefault()
+          this.lake.moveCrosshairs(0, -1)
+          break
+        case 's':
+          event.preventDefault()
+          this.lake.moveCrosshairs(0, 1)
+          break
+        case 'a':
+          event.preventDefault()
+          this.lake.moveCrosshairs(-1, 0)
+          break
+        case 'd':
+          event.preventDefault()
+          this.lake.moveCrosshairs(1, 0)
+          break
+      }
+    }
+
+    document.addEventListener('keydown', this.keyHandler)
+  }
+
+  private bindDpad(button: HTMLButtonElement, dx: number, dy: number): void {
+    button.addEventListener('click', () => {
+      this.lake.moveCrosshairs(dx, dy)
+    })
+  }
+
+  private handleSelectToggle(): void {
+    const active = this.lake.toggleCrosshairs()
+    this.selectButtonEl.setAttribute('aria-pressed', String(active))
+    this.selectButtonEl.classList.toggle('btn-pill-active', active)
+
+    if (active) {
+      this.setStatus(
+        this.getEngineInstance().isRunning
+          ? 'AIM · PRESS A TO SHOOT'
+          : 'CROSSHAIRS ON · PRESS START',
+      )
+      return
+    }
+
+    if (this.getEngineInstance().isRunning) {
+      this.setStatus('LISTENING · HONK OR PEEP')
+      return
+    }
+
+    this.setStatus('PRESS START · ALLOW MIC')
+  }
+
+  private handleShoot(): void {
+    if (!this.lake.isCrosshairsActive()) {
+      this.setStatus('PRESS SELECT · AIM FIRST', true)
+      return
+    }
+
+    const hit = this.lake.shootAtCrosshairs()
+    if (hit) {
+      this.setStatus('NICE SHOT · SPARKLE POOF')
+      return
+    }
+
+    this.setStatus('MISSED · MOVE CROSSHAIRS', true)
   }
 
   private getEngineInstance(): AppEngine {
@@ -109,14 +247,14 @@ export class App {
     return this.engine
   }
 
-  private async handleToggle(): Promise<void> {
+  private async handleStartToggle(): Promise<void> {
     const engine = this.getEngineInstance()
 
     if (engine.isRunning) {
       engine.stop()
-      this.spectrogram.detach()
-      this.setStatus('The goose is resting.')
-      this.updateToggleButton(false)
+      this.lake.detach()
+      this.setStatus(this.lake.isCrosshairsActive() ? 'CROSSHAIRS ON · PRESS START' : 'PRESS START · ALLOW MIC')
+      this.updateStartButton(false)
       return
     }
 
@@ -124,12 +262,16 @@ export class App {
       await engine.start()
       const analysers = engine.getAnalyserNodes()
       if (analysers) {
-        this.spectrogram.attach(analysers.input, analysers.output)
+        this.lake.attach(analysers.input, analysers.output)
       }
-      this.setStatus('The goose is listening — make a sound and hear your echo.')
-      this.updateToggleButton(true)
+      this.setStatus(
+        this.lake.isCrosshairsActive()
+          ? 'AIM · PRESS A TO SHOOT'
+          : 'LISTENING · HONK OR PEEP',
+      )
+      this.updateStartButton(true)
     } catch (error) {
-      this.spectrogram.detach()
+      this.lake.detach()
       this.handleStartError(error)
     }
   }
@@ -138,16 +280,16 @@ export class App {
     const name = error instanceof Error ? error.name : ''
 
     if (name === 'NotAllowedError') {
-      this.setStatus('Microphone permission denied. Allow access and try again.', true)
+      this.setStatus('MIC DENIED · ALLOW ACCESS', true)
       return
     }
 
     if (name === 'NotFoundError') {
-      this.setStatus('No microphone found. Connect a mic and try again.', true)
+      this.setStatus('NO MIC FOUND · PLUG IN', true)
       return
     }
 
-    this.setStatus('Could not start echo. Check your microphone and try again.', true)
+    this.setStatus('ERROR · CHECK MIC', true)
   }
 
   private setStatus(message: string, isError = false): void {
@@ -155,8 +297,9 @@ export class App {
     this.statusEl.classList.toggle('status-error', isError)
   }
 
-  private updateToggleButton(isRunning: boolean): void {
-    this.toggleButtonEl.textContent = isRunning ? 'Shh...' : 'Honk!'
-    this.toggleButtonEl.setAttribute('aria-pressed', String(isRunning))
+  private updateStartButton(isRunning: boolean): void {
+    this.startButtonEl.textContent = isRunning ? 'STOP' : 'START'
+    this.startButtonEl.setAttribute('aria-pressed', String(isRunning))
+    this.startButtonEl.classList.toggle('btn-pill-active', isRunning)
   }
 }

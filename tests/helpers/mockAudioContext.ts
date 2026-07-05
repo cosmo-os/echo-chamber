@@ -20,19 +20,31 @@ export class MockAnalyserNode extends MockAudioNode {
   fftSize = 2048
   smoothingTimeConstant = 0.7
   frequencyBinCount = 1024
+  context = { sampleRate: 48000 } as AudioContext
   private readonly frequencyData: Uint8Array
+  private readonly timeDomainData: Uint8Array
 
   constructor() {
     super()
     this.frequencyData = new Uint8Array(this.frequencyBinCount)
+    this.timeDomainData = new Uint8Array(this.fftSize)
+    this.timeDomainData.fill(128)
   }
 
   getByteFrequencyData(array: Uint8Array): void {
     array.set(this.frequencyData.subarray(0, array.length))
   }
 
+  getByteTimeDomainData(array: Uint8Array): void {
+    array.set(this.timeDomainData.subarray(0, array.length))
+  }
+
   setFrequencyData(data: Uint8Array): void {
     this.frequencyData.set(data.subarray(0, this.frequencyBinCount))
+  }
+
+  setTimeDomainData(data: Uint8Array): void {
+    this.timeDomainData.set(data.subarray(0, this.fftSize))
   }
 }
 
